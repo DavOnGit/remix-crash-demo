@@ -7,6 +7,7 @@ import {
   ScrollRestoration,
 } from "remix";
 import type { MetaFunction } from "remix";
+import { DevErrorBoundary } from "remix-crash";
 
 export const meta: MetaFunction = () => ({
   charset: "utf-8",
@@ -25,8 +26,20 @@ export default function App() {
         <Outlet />
         <ScrollRestoration />
         <Scripts />
-        <LiveReload />
+        {process.env.NODE_ENV === "development" && <LiveReload />}
       </body>
     </html>
+  );
+}
+
+export const ErrorBoundary: React.FC<{error: Error}> = ({ error }) => {
+  if (process.env.NODE_ENV === "development") {
+    return <DevErrorBoundary error={error} />;
+  }
+
+  return (
+    <div>
+      <p>Oops something very wrong happened...</p>
+    </div>
   );
 }
